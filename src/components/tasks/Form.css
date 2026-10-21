@@ -1,0 +1,123 @@
+
+.task-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  width: 100%;
+}
+
+.task-form .form-field {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.task-form label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #243047;
+}
+
+.task-form input,
+.task-form textarea,
+.task-form select {
+  width: 100%;
+  padding: 0.8rem 0.9rem;
+  border: 1px solid #d7deea;
+  border-radius: 8px;
+  background: #ffffff;
+  color: #1e293b;
+  font: inherit;
+  font-size: 0.95rem;
+  outline: none;
+  transition:
+    border-color 0.2s ease,
+    box-shadow 0.2s ease;
+}
+
+.task-form textarea {
+  resize: vertical;
+  min-height: 110px;
+}
+
+.task-form input::placeholder,
+.task-form textarea::placeholder {
+  color: #94a3b8;
+}
+
+.task-form input:focus,
+.task-form textarea:focus,
+.task-form select:focus {
+  border-color: #6366f1;
+  box-shadow: 0 0 0 3px rgb(99 102 241 / 12%);
+}
+
+.task-form input[aria-invalid='true'],
+.task-form textarea[aria-invalid='true'],
+.task-form select[aria-invalid='true'] {
+  border-color: #dc2626;
+}
+
+.task-form .form-error {
+  margin: 0;
+  color: #dc2626;
+  font-size: 0.82rem;
+  line-height: 1.4;
+}
+
+.task-form .form-row {
+  display: flex;
+  gap: 1rem;
+}
+
+.task-form .form-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.25rem;
+}
+
+.task-form .button {
+  border: none;
+  cursor: pointer;
+  font: inherit;
+}
+
+.task-form .button-primary {
+  padding: 0.8rem 1.4rem;
+  border-radius: 8px;
+  background: #4f46e5;
+  color: #ffffff;
+  font-weight: 600;
+  transition:
+    background 0.2s ease,
+    transform 0.2s ease;
+}
+
+.task-form .button-primary:hover {
+  background: #4338ca;
+}
+
+.task-form .button-primary:active {
+  transform: scale(0.98);
+}
+
+.task-form .button-primary:focus-visible {
+  outline: 3px solid rgb(99 102 241 / 35%);
+  outline-offset: 3px;
+}
+
+@media (max-width: 520px) {
+  .task-form .form-row {
+    flex-direction: column;
+  }
+
+  .task-form .form-actions {
+    justify-content: stretch;
+  }
+
+  .task-form .button-primary {
+    width: 100%;
+  }
+}
