@@ -1,10 +1,17 @@
 import { useState } from "react";
 import type { Task } from "../types/task";
-import { loadTasks } from "../services/taskStorage";
+import { loadTasks, saveTasks } from "../services/taskStorage";
+import { Link } from "react-router-dom";
 
 function TaskPage() {
   const [tasks, setTasks] = useState<Task[]>(()=> loadTasks());
 // ()=> loadtasks() is clled lazy state initalizer
+
+const handleDeleteTask = (taskId: string) =>{
+  const filteredTasks = tasks.filter((item)=> item.id!==taskId);
+  saveTasks(filteredTasks);
+  setTasks(filteredTasks);
+}
 
   return (
     <main className="container task-page">
@@ -33,6 +40,19 @@ function TaskPage() {
                   <span>
                     Updated: {new Date(task.updatedAt).toLocaleDateString()}
                   </span>
+                </div>
+                <div className="task-card-actions">
+                  <Link className="button button-ptimary" to={`/tasks/${task.id}/edit`}>Edit</Link>
+                </div>
+                <div className="task-card-actions">
+                  <button 
+                  type='button' className="button"
+                  onClick={ () => {
+                    const yes = window.confirm('Are you sure want to delete this task?');
+
+                    if(yes){
+                     handleDeleteTask(task.id)}}
+                    }>Delete</button>
                 </div>
               </article>
             ))}
