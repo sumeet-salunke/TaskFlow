@@ -38,6 +38,7 @@ function AddTaskPage() {
         <TaskForm
           onSubmit={handleCreateTask}
           submitLabel="Create task"
+          cancelHref="/tasks"
         />
       </section>
     </main>

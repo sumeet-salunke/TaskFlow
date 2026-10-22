@@ -1,5 +1,6 @@
 import {useForm} from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import { taskSchema, type TaskFormValues } from "../../validations/taskSchema";
 
 
@@ -8,11 +9,13 @@ import { taskSchema, type TaskFormValues } from "../../validations/taskSchema";
 function FormPractice() {
 const {
   register, handleSubmit, formState: {errors},
-}= useForm<TaskFormValues>({
+}= useForm<z.input<typeof taskSchema>, unknown, TaskFormValues>({
   resolver: zodResolver(taskSchema),
   defaultValues: {
     title: '',
     description:'',
+    status: 'pending',
+    priority: 'medium',
   },
 });
 const onSubmit = (data: TaskFormValues) => {

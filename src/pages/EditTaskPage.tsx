@@ -1,4 +1,4 @@
-import { useParams } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import { loadTasks } from "../services/taskStorage";
 import type { Task } from "../types/task";
 import TaskForm from "../components/tasks/TaskForm";
@@ -14,9 +14,10 @@ function EditTaskPage () {
   const task = tasks.find((item) => item.id === id);
 if(!task){
   return (
-    <main>
+    <main className="container missing-task-state">
       <h1>Task not found</h1>
-      <p>This task does not exists or may have been deleted.</p>
+      <p>This task does not exist or may have been deleted.</p>
+      <Link to="/tasks" className="button button-secondary">Back to tasks</Link>
     </main>
   )
 }
@@ -45,11 +46,12 @@ navigate('/tasks') returns you to the task list. */}
 }
 
   return <>
-    <main>
+    <main className="container task-editor-page">
     <h1>Edit task</h1>
     <TaskForm 
     onSubmit={handleUpdateTask} 
     submitLabel="Save Changes"
+    cancelHref="/tasks"
     initialValues={{
       title: task.title,
       description: task.description,

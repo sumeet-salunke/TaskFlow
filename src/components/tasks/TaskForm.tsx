@@ -17,6 +17,7 @@
 import { z } from 'zod';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
+import { Link } from 'react-router-dom';
 
 import {
   taskSchema,
@@ -30,6 +31,7 @@ import './Form.css';
 interface TaskFormProps {
   onSubmit: (data: Omit<Task, 'id' | 'createdAt' | 'updatedAt'>) => void;
   submitLabel: string;
+  cancelHref?: string;
   initialValues?: {
     title: string;
     description: string;
@@ -41,6 +43,7 @@ interface TaskFormProps {
 function TaskForm({
   onSubmit,
   submitLabel,
+  cancelHref,
   initialValues,
 }: TaskFormProps) {
   const {
@@ -108,30 +111,45 @@ function TaskForm({
       <div className="form-row">
         <div className="form-field">
           <label htmlFor="priority">Priority</label>
-          <select id="priority" {...register('priority')}>
+          <select
+            id="priority"
+            {...register('priority')}
+            aria-invalid={!!errors.priority}
+            aria-describedby={errors.priority ? 'priority-error' : undefined}
+          >
             <option value="low">Low</option>
             <option value="medium">Medium</option>
             <option value="high">High</option>
           </select>
           {errors.priority && (
-            <p className="form-error">{errors.priority.message}</p>
+            <p className="form-error" id="priority-error">{errors.priority.message}</p>
           )}
         </div>
 
         <div className="form-field">
           <label htmlFor="status">Status</label>
-          <select id="status" {...register('status')}>
+          <select
+            id="status"
+            {...register('status')}
+            aria-invalid={!!errors.status}
+            aria-describedby={errors.status ? 'status-error' : undefined}
+          >
             <option value="pending">Pending</option>
             <option value="in-progress">In progress</option>
             <option value="completed">Completed</option>
           </select>
           {errors.status && (
-            <p className="form-error">{errors.status.message}</p>
+            <p className="form-error" id="status-error">{errors.status.message}</p>
           )}
         </div>
       </div>
 
       <div className="form-actions">
+        {cancelHref && (
+          <Link to={cancelHref} className="button button-secondary">
+            Cancel
+          </Link>
+        )}
         <button type="submit" className="button button-primary">
           {submitLabel}
         </button>

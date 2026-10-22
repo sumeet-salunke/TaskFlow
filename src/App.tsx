@@ -6,7 +6,8 @@ import Footer from './components/layout/Footer';
 import TaskPage from './pages/TasksPage';
 import AddTaskPage from './pages/AddTaskPage';
 import EditTaskPage from "./pages/EditTaskPage";
-
+import TaskDetailsPage from './pages/TaskDetailsPage';
+import NotFoundPage from './pages/NotFoundPage';
 
 function AppLayout() {
   return <>
@@ -26,12 +27,11 @@ function App(){
       <Route path="/" element={<LandingPage/>} />
       <Route path="/tasks" element={<TaskPage/>} />
       <Route path="/tasks/new" element={<AddTaskPage/>}></Route>
+      <Route path="/tasks/:id" element={<TaskDetailsPage/>}/>
       <Route path="/tasks/:id/edit" element={<EditTaskPage/>} />
+      <Route path="*" element={<NotFoundPage/>} />
       </Route>
-     
     </Routes>
   )
 }
 export default App
-
-

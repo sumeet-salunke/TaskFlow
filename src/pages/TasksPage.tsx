@@ -1,5 +1,5 @@
 
-import { useState , useEffect} from "react";
+import { useState } from "react";
 import type { Task, TaskStatus, TaskPriority } from "../types/task";
 import { loadTasks, saveTasks } from "../services/taskStorage";
 import { Link } from "react-router-dom";
@@ -17,6 +17,13 @@ function TaskPage() {
   const [prioritySort, setPrioritySort] = useState<
     "all" | "high-to-low" | "low-to-high"
   >("all");
+  const [itemsPerPage, setItemsPerPage] = useState(5);
+
+  const priorityRank: Record<TaskPriority, number> = {
+    high: 3,
+    medium: 2,
+    low: 1,
+  };
 
  // Search and filter tasks.
   const filteredTasks = tasks.filter(
@@ -42,18 +49,14 @@ function TaskPage() {
 
 
   const [currentPage, setCurrentPage] = useState(1);
-  const itemPerPage = 5;
-  const startIndex = (currentPage - 1) * itemPerPage;
-  const endIndex = startIndex+ itemPerPage;
-
+  const totalPages = Math.max(1, Math.ceil(sortedTasks.length / itemsPerPage));
+  const effectivePage = Math.min(currentPage, totalPages);
+  const startIndex = (effectivePage - 1) * itemsPerPage;
+  const endIndex = startIndex + itemsPerPage;
   const paginatedTasks = sortedTasks.slice(startIndex, endIndex);
-  const totalPages = Math.ceil(sortedTasks.length/ itemPerPage)
-
-  const priorityRank: Record<TaskPriority, number> = {
-    high: 3,
-    medium: 2,
-    low: 1,
-  };
+  const startItem = sortedTasks.length === 0 ? 0 : startIndex + 1;
+  const endItem = Math.min(endIndex, sortedTasks.length);
+  const totalItems = sortedTasks.length;
 
  
 
@@ -62,72 +65,78 @@ function TaskPage() {
     saveTasks(updatedTasks);
     setTasks(updatedTasks);
   };
-  useEffect(()=> {
-    setCurrentPage(1);
-  },[searchTerm, statusFilter, priorityFilter, prioritySort]);
-  useEffect(()=> {
-    if(currentPage> totalPages && totalPages>0){
-      setCurrentPage(totalPages);
-    }
-  },[currentPage, totalPages]);
-
   return (
-    <main className="container task-page">
+    <main className="container tasks-page">
       <h1>My Tasks</h1>
       <p>Manage your tasks and track your progress</p>
 
-      {/* Search */}
-      <div className="task-search">
-        <input
-          type="text"
-          placeholder="Search tasks by title"
-          value={searchTerm}
-          onChange={(event) => setSearchTerm(event.target.value)}
-        />
+      <div className="task-controls">
+        <div className="control-field control-field-search">
+          <label htmlFor="task-search">Search tasks</label>
+          <input
+            id="task-search"
+            type="text"
+            placeholder="Search tasks by title"
+            value={searchTerm}
+            onChange={(event) => {
+              setSearchTerm(event.target.value);
+              setCurrentPage(1);
+            }}
+          />
+        </div>
+        <div className="control-field">
+          <label htmlFor="status-filter">Status</label>
+          <select
+            id="status-filter"
+            value={statusFilter}
+            onChange={(event) => {
+              setStatusFilter(event.target.value as TaskStatus | "all");
+              setCurrentPage(1);
+            }}
+          >
+          <option value="all">All statuses</option>
+          <option value="pending">Pending</option>
+          <option value="in-progress">In Progress</option>
+          <option value="completed">Completed</option>
+          </select>
+        </div>
+        <div className="control-field">
+          <label htmlFor="priority-filter">Priority</label>
+          <select
+            id="priority-filter"
+            value={priorityFilter}
+            onChange={(event) => {
+              setPriorityFilter(event.target.value as TaskPriority | "all");
+              setCurrentPage(1);
+            }}
+          >
+          <option value="all">All priorities</option>
+          <option value="low">Low</option>
+          <option value="medium">Medium</option>
+          <option value="high">High</option>
+          </select>
+        </div>
+        <div className="control-field">
+          <label htmlFor="priority-sort">Sort</label>
+          <select
+            id="priority-sort"
+            value={prioritySort}
+            onChange={(event) => {
+              setPrioritySort(
+                event.target.value as
+                  | "all"
+                  | "high-to-low"
+                  | "low-to-high",
+              );
+              setCurrentPage(1);
+            }}
+          >
+          <option value="all">Default order</option>
+          <option value="high-to-low">Priority: High to Low</option>
+          <option value="low-to-high">Priority: Low to High</option>
+          </select>
+        </div>
       </div>
-
-      {/* Status filter */}
-      <select
-        value={statusFilter}
-        onChange={(event) =>
-          setStatusFilter(event.target.value as TaskStatus | "all")
-        }
-      >
-        <option value="all">All statuses</option>
-        <option value="pending">Pending</option>
-        <option value="in-progress">In Progress</option>
-        <option value="completed">Completed</option>
-      </select>
-
-      {/* Priority filter */}
-      <select
-        value={priorityFilter}
-        onChange={(event) =>
-          setPriorityFilter(event.target.value as TaskPriority | "all")
-        }
-      >
-        <option value="all">All priorities</option>
-        <option value="low">Low</option>
-        <option value="medium">Medium</option>
-        <option value="high">High</option>
-      </select>
-
-      {/* Priority sorting */}
-      <select
-        value={prioritySort}
-        onChange={(event) =>
-          setPrioritySort(
-            event.target.value as
-              | "all"
-              | "high-to-low"
-              | "low-to-high",
-          )
-        }
-      >
-        <option value="all">Default order</option>
-        <option value="high-to-low">Priority: High to Low</option>
-        <option value="low-to-high">Priority: Low to High</option>
-      </select>
 
       {/* Empty states and task list */}
       {tasks.length === 0 ? (
@@ -141,20 +150,21 @@ function TaskPage() {
           <p>No tasks match your search or filters. Try changing them.</p>
         </section>
       ) : (
-        <section className="task-list">
+        <>
+          <section className="task-list">
           {paginatedTasks.map((task) => (
             <article className="task-card" key={task.id}>
               <div className="task-card-header">
                 <h2>{task.title}</h2>
-                <span className={`status status-${task.status}`}>
-                  {task.status}
+                  <span className={`status status-${task.status}`}>
+                  {task.status === 'in-progress' ? 'In progress' : task.status}
                 </span>
               </div>
 
               <p>{task.description || "No description provided"}</p>
 
               <div className="task-card-meta">
-                <span>Priority: {task.priority}</span>
+                <span>Priority: <strong className={`priority priority-${task.priority}`}>{task.priority}</strong></span>
                 <span>
                   Updated: {new Date(task.updatedAt).toLocaleDateString()}
                 </span>
@@ -170,7 +180,7 @@ function TaskPage() {
 
                 <button
                   type="button"
-                  className="button"
+                  className="button button-danger"
                   onClick={() => {
                     const confirmed = window.confirm(
                       "Are you sure you want to delete this task?",
@@ -183,22 +193,42 @@ function TaskPage() {
                 >
                   Delete
                 </button>
+                <Link className="button button-secondary" to={`/tasks/${task.id}`}>View details</Link>
               </div>
             </article>
           ))}
+          </section>
+          <div className="pagination-toolbar">
+            <p className="pagination-info">
+              Showing {startItem}–{endItem} of {totalItems} tasks
+            </p>
+            <div className="page-size-control">
+              <label htmlFor="pageSize">Tasks per page</label>
+              <select id="pageSize"
+              value={itemsPerPage}
+              onChange={(event)=> {
+                setItemsPerPage(Number(event.target.value));
+                setCurrentPage(1);
+              }}>
+                <option value={5}>5</option>
+                <option value={10}>10</option>
+                <option value={20}>20</option>
+              </select>
+            </div>
+          </div>
           <div className="pagination">
             <button type="button"
-            disabled={currentPage===1}
-            onClick={() => setCurrentPage((page)=> page-1)}>Previous</button>
+            disabled={effectivePage===1}
+            onClick={() => setCurrentPage((page)=> Math.max(1, page - 1))}>Previous</button>
             <span>
-              Page {currentPage} of {totalPages}
+              Page {effectivePage} of {totalPages}
             </span>
             <button 
             type="button"
-            disabled={currentPage===totalPages}
-            onClick={() => setCurrentPage((page)=> page+1)}>Next</button>
+            disabled={effectivePage===totalPages}
+            onClick={() => setCurrentPage((page)=> Math.min(totalPages, page + 1))}>Next</button>
           </div>
-        </section>
+        </>
       )}
     </main>
   );

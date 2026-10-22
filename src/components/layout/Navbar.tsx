@@ -1,29 +1,41 @@
+import { useState } from "react";
 import { Link, NavLink } from "react-router-dom";
 
 function Navbar() {
+  const [menuOpen, setMenuOpen] = useState(false);
+
   return (
     <header className="site-header">
-      <nav className="navbar-container">
-        <Link to="/" className="brand">
-        <span className="brand-icon">
-          T</span>
+      <nav className="container navbar">
+        <Link to="/" className="brand" onClick={() => setMenuOpen(false)}>
+          <span className="brand-icon" aria-hidden="true">T</span>
           <span>TaskFlow</span>
-          </Link>
-          <div className="nav-links">
-            <NavLink to="/" end className={({isActive}) => isActive?'nav-link active': 'nav-link'} >
-            Home</NavLink>
+        </Link>
 
-            <NavLink
-            to="/tasks"
-            className={({isActive})=>
-            isActive?'nav-link active':'nav-link'}
-            >
+        <div id="main-navigation" className={`nav-links${menuOpen ? ' open' : ''}`}>
+          <NavLink to="/" end className="nav-link" onClick={() => setMenuOpen(false)}>
+            Home
+          </NavLink>
+
+          <NavLink to="/tasks" className="nav-link" onClick={() => setMenuOpen(false)}>
             My Tasks
-            </NavLink>
-          </div>
-          <Link to="/tasks/new" className="button button-primary nav-cta" >
-          +Add Task
+          </NavLink>
+        </div>
+
+        <Link to="/tasks/new" className="button button-primary nav-cta" onClick={() => setMenuOpen(false)}>
+          + Add Task
           </Link>
+
+        <button
+          type="button"
+          className="menu-toggle"
+          aria-label={menuOpen ? 'Close navigation menu' : 'Open navigation menu'}
+          aria-expanded={menuOpen}
+          aria-controls="main-navigation"
+          onClick={() => setMenuOpen((open) => !open)}
+        >
+          <span aria-hidden="true">{menuOpen ? '×' : '☰'}</span>
+        </button>
       </nav>
     </header>
   );

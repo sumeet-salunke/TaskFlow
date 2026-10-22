@@ -6,7 +6,7 @@ const features = [
     number: '01',
     title: 'Stay organized',
     description:
-      'Keep tasks, descriptions, priorities, and deadlines in one place instead of scattered notes.',
+      'Keep tasks, descriptions, priorities, and status updates in one place instead of scattered notes.',
     icon: '▤',
   },
   {
